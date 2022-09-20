@@ -1,4 +1,4 @@
-const gulp = require('gulp');
+const { src, dest, watch, series } = require('gulp');
 const minhtml = require('gulp-minify-html');
 const sass = require('gulp-sass')(require('sass'));
 const autoprefix = require('gulp-autoprefixer');
@@ -6,34 +6,41 @@ const mincss = require('gulp-clean-css');
 const minjs = require('gulp-terser');
 
 function html() {
-    return gulp.src('src/*.html')
+    return src('src/*.html')
         .pipe(minhtml())
-        .pipe(gulp.dest('dist/'))
+        .pipe(dest('dist/'))
 }
 
 function styles() {
-    return gulp.src('src/styles/*.scss')
+    return src('src/styles/*.scss')
         .pipe(sass())
         .pipe(autoprefix())
         .pipe(mincss())
-        .pipe(gulp.dest('dist/'))
+        .pipe(dest('dist/'))
 }
 
 function scripts() {
-    return gulp.src('src/scripts/*.js')
+    return src('src/scripts/*.js')
         .pipe(minjs())
-        .pipe(gulp.dest('dist/'))
+        .pipe(dest('dist/'))
+}
+
+function img() {
+    return src('src/images/*.{png,jpg}')
+        .pipe(dest('dist/images/'))
 }
 
 function watchTask() {
-    gulp.watch('src/*.html', html);
-    gulp.watch('src/styles/**/*.scss', styles);
-    gulp.watch('src/scripts/*.js', scripts);
+    watch('src/*.html', html);
+    watch('src/styles/**/*.scss', styles);
+    watch('src/scripts/*.js', scripts);
+    watch('src/images/*.{jpg,png}', img)
 }
 
-exports.default = gulp.series(
+exports.default = series(
     html,
     styles,
     scripts,
+    img,
     watchTask
 )
